@@ -14,6 +14,7 @@ try {
 const fs = require('fs');
 const path = require('path');
 const bodyParser = require('body-parser');
+const { log } = require('console');
 const router = express.Router();
 
 const enableCORS = function (req, res, next) {

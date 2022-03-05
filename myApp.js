@@ -1,6 +1,27 @@
 require('dotenv').config();
 const mongoose = require('mongoose');
 
+const personSchema = new mongoose.Schema(
+	{
+		name: { type: String, required: true },
+		age: Number,
+		favoriteFoods: [String],
+		title: String, // String is shorthand for {type: String}
+		author: String,
+		body: String,
+		comments: [{ body: String, date: Date }],
+		date: { type: Date, default: Date.now },
+		hidden: Boolean,
+		meta: {
+			votes: Number,
+			favs: Number,
+		},
+	},
+	{ timestamps: true }
+);
+
+const Person = mongoose.model('Person', personSchema);
+
 const MONGO_URI = process.env.MONGO_URI;
 
 mongoose.connect(MONGO_URI, {
@@ -8,22 +29,59 @@ mongoose.connect(MONGO_URI, {
 	useUnifiedTopology: true,
 });
 
-let Person;
-
 const createAndSavePerson = (done) => {
-	done(null /*, data*/);
+	var person = new Person({
+		name: 'Jasmin Adilovic',
+		age: 43,
+		favoriteFoods: ['eggs', 'fish', 'fresh fruit'],
+	});
+	person.save(function (err, data) {
+		if (err) return console.error(err);
+		done(null, data);
+	});
 };
 
-const createManyPeople = (arrayOfPeople, done) => {
-	done(null /*, data*/);
+const arrayOfPeople = [
+	{
+		name: 'Jasmin Adilovic',
+		age: 43,
+		favoriteFoods: ['eggs', 'fish', 'fresh fruit'],
+	},
+	{
+		name: 'Jasmin Adilovic',
+		age: 43,
+		favoriteFoods: ['eggs', 'fish', 'fresh fruit'],
+	},
+	{
+		name: 'Jasmin Adilovic',
+		age: 43,
+		favoriteFoods: ['eggs', 'fish', 'fresh fruit'],
+	},
+];
+
+const createManyPeople = function (arrayOfPeople, done) {
+	Person.create(arrayOfPeople, function (err, people) {
+		if (err) return console.log(err);
+		done(null, people);
+	});
 };
 
 const findPeopleByName = (personName, done) => {
-	done(null /*, data*/);
+	Person.find({ name: personName }, function (err, people) {
+		if (err) {
+			return console.log(err);
+		}
+		done(null, people);
+	});
 };
 
 const findOneByFood = (food, done) => {
-	done(null /*, data*/);
+	Person.findOne({ favoriteFoods: food }, function (err, people) {
+		if (err) {
+			return console.log(err);
+		}
+		done(null, people);
+	});
 };
 
 const findPersonById = (personId, done) => {
